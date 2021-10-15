@@ -6,19 +6,28 @@ import './WrappedERC721asERC20.sol';
 
 contract Wrap721to20 {
 
-  function wrap( uint256 _totSupply,
+address[] public wrapped; 
+  function create( 
                 address _collection,
-                uint256 _tokenId) public {
+                uint256 _tokenId) public returns (address)  {
     IERC721Metadata nft = IERC721Metadata(_collection);
 
     string memory nameT = string( abi.encodePacked("w", nft.name(), "_", _tokenId));            
     string memory sT = string( abi.encodePacked("w", nft.symbol()));
 
-    WrappedERC721asERC20 w =  new  WrappedERC721asERC20(nameT, sT);
-    w.wrap(_totSupply, _collection, _tokenId, msg.sender);
+    WrappedERC721asERC20 w =  new  WrappedERC721asERC20(nameT, sT, _collection, _tokenId);
+    return address(w);            
+    }
+  
+  function wrap (uint256 _totSupply, address _wAddr) public {
+    WrappedERC721asERC20 w = WrappedERC721asERC20(_wAddr);
+    w.wrap(_totSupply,  msg.sender);
+    wrapped.push(address(w));
+    
   }
 
-  function unwrap(address _token) public  returns (uint) {
+  function unwrap(address _token) public   {
      WrappedERC721asERC20(_token).unwrap(msg.sender);
   }
+
 }
