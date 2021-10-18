@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import {Form, FormGroup, Input, HelpBlock, Button, FormText} from 'reactstrap';
 import Wrap721to20 from "./contracts/Wrap721to20.json";
 
-import IERC721 from "./contracts/IERC721.json";
+import IERC721 from "./contracts/ERC721example.json";
 import WrappedERC721asERC20 from "./contracts/WrappedERC721asERC20.json";
 import getWeb3 from "./getWeb3";
 import addChain from "./addChain"
@@ -55,17 +55,20 @@ class App extends Component {
   }
 
   runWrap = async (e) => {
-    const { accounts, factory, totsupply, collection, tokenId, networkId, web3   } = this.state;
-
-    const wrapped =  await factory.methods.create(collection, tokenId).send({ from: accounts[0] });
-
-    const erc721 = new web3.eth.Contract(
+    try {
+    const { accounts, factory, totSupply, collection, tokenId, networkId, web3   } = this.state;
+   const erc721 = new web3.eth.Contract(
       IERC721.abi,
       collection,
+      { from: accounts[0] }
     );
-   await erc721.approve (tokenId, wrapped )
-    
-   await factory.methods.wrap(totsupply, wrapped).send({ from: accounts[0] });
+     const erc721name = erc721.methods.name().call({ from: accounts[0] });
+     console.log (erc721name)
+    const wrapped =  await factory.methods.create(collection, tokenId).send({ from: accounts[0] });
+    const wrERC20addr = wrapped.events.CreatedWrapping.returnValues[0];
+    console.log('wrERC20addr: ', wrERC20addr);
+     await erc721.methods.approve( wrERC20addr,tokenId ).send({ from: accounts[0] });
+     await factory.methods.wrap(totSupply, wrERC20addr).send({ from: accounts[0] });
 
     // Get the value from the contract to prove it worked.
   //  const response = await contract.methods.get().call();
@@ -74,17 +77,27 @@ class App extends Component {
 
     const erc20Wrapped = new web3.eth.Contract(
       WrappedERC721asERC20.abi,
-      wrapped.address,
+      wrERC20addr,
     );
+    const wrappedNam= await erc20Wrapped.methods.name().call()
+    const wrappedSymbo= await erc20Wrapped.methods.symbol().call()
+    const wrappedTotsuppl=await erc20Wrapped.methods.totalSupply().call()
+    const  wrappedTokenUR=await erc20Wrapped.methods.tokenURI(0).call()
 
-    this.setState({ wrappedName: await erc20Wrapped.name().call(), 
-                    wrappedSymbol: await erc20Wrapped.symbol().call(),
-                    wrappedTotsupply:await erc20Wrapped.totsupply().call(),
-                    wrappedTokenURI:await erc20Wrapped.tokenURI().call(),
+    this.setState({ wrappedName: wrappedNam,
+                    wrappedSymbol: wrappedSymbo,
+                    wrappedTotsupply:wrappedTotsuppl,
+                    wrappedTokenURI:wrappedTokenUR,
                     wrappedAddress: wrapped.address
       });
     
-
+    } catch (error) {
+      // Catch any errors for any of the above operations.
+      alert(
+        `Failed to load `,
+      );
+      console.error(error);
+    }
     // Update state with the result.
   //  this.setState({ storageValue: response });
   };

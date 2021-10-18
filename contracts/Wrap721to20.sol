@@ -7,16 +7,21 @@ import './WrappedERC721asERC20.sol';
 contract Wrap721to20 {
 
 address[] public wrapped; 
+mapping (address=>uint256) nonces;
+
+  event CreatedWrapping (address);
   function create( 
                 address _collection,
-                uint256 _tokenId) public returns (address)  {
+                uint256 _tokenId) public  {
     IERC721Metadata nft = IERC721Metadata(_collection);
+    require(nft.ownerOf(_tokenId) == msg.sender, "Only owner of NFT can wrap it!");
 
-    string memory nameT = string( abi.encodePacked("w", nft.name(), "_", _tokenId));            
-    string memory sT = string( abi.encodePacked("w", nft.symbol()));
+    nonces[_collection] = nonces[_collection]+1;
+    string memory nameT = string( abi.encodePacked("w", nft.name(), "_",  nonces[_collection] ));            
+    string memory sT = string( abi.encodePacked("w", nft.symbol(), "_",  nonces[_collection] ));
 
     WrappedERC721asERC20 w =  new  WrappedERC721asERC20(nameT, sT, _collection, _tokenId);
-    return address(w);            
+    emit CreatedWrapping(address(w));
     }
   
   function wrap (uint256 _totSupply, address _wAddr) public {
