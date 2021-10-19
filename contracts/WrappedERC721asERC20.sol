@@ -25,12 +25,12 @@ contract WrappedERC721asERC20 is ERC20Burnable, IERC721Receiver {
   
       }
 
-    function unwrap(address _sender) public {
+    function unwrap(address _recepient) public {
         ERC20Burnable thisT = ERC20Burnable(address(this));
-        require(thisT.balanceOf(_sender) == thisT.totalSupply(), "Needs all minted tokens here" );
+        require(thisT.balanceOf(_recepient) == thisT.totalSupply(), "Needs all totalSupply tokens on _recepient's address" );
         IERC721 nft = IERC721Metadata(collection);
-        thisT.burnFrom (_sender, thisT.totalSupply());
-        nft.transferFrom(address(this), _sender, tokenID);
+        thisT.burnFrom (_recepient, thisT.totalSupply());
+        nft.transferFrom(address(this), _recepient, tokenID);
     }
 
     function tokenURI(uint256 _tokenId) external view returns (string memory ) {
