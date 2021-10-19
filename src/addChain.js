@@ -1,14 +1,14 @@
 import getWeb3 from "./getWeb3";
 
 
-async function addUniqChain () {
+async function addChain () {
             
   
     if (typeof window.ethereum !== 'undefined') {
       try {
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x22b8' }],
+          params: [{ chainId: '0x89' }],
         });
       } catch (switchError) {
         // This error code indicates that the chain has not been added to MetaMask.
@@ -16,12 +16,11 @@ async function addUniqChain () {
           try {
             await window.ethereum.request({
               method: 'wallet_addEthereumChain',
-              params: [{ chainId:'0x22b8', chainName:'UniqueEtherTest', 
+              params: [{ chainId:'0x89', chainName:'Polygon', 
               rpcUrls:["https://westend-rpc.unique.network/"],
-        /*         chainId: '0x22b8', chainName: 'UniqueEtherChainTST',rpcUrl: 'http://35.157.131.180:9973/', */
                  nativeCurrency: {
-                  name: "Unique",
-                  symbol: "UNQ", // 2-6 characters long
+                  name: "Matic",
+                  symbol: "MATIC", // 2-6 characters long
                   decimals: 18,
                   }
                 }],
@@ -48,3 +47,5 @@ async function addUniqChain () {
     });
  */
   }
+
+  export default addChain

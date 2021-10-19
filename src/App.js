@@ -166,8 +166,11 @@ class App extends Component {
     return (
       <div className="App">
         <h1>Wrap your NFT ERC721 to ERC20 and trade as usual coin!!</h1>
+        <Button color="primary" onClick={(e) => addChain()}>Switch to Polygon </Button>
+
         <p>Enter ERC721 data:  </p>
         <Form>
+
                 <FormGroup>
                   <Input type = "text"
                     key="collection"
