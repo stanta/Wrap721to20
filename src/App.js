@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {Form, FormGroup, Input, HelpBlock, Button, FormText} from 'reactstrap';
+import {Form, FormGroup, Input, HelpBlock, Button, FormText, ListGroup, ListGroupItem} from 'reactstrap';
 import Wrap721to20 from "./contracts/Wrap721to20.json";
 
 import IERC721 from "./contracts/ERC721example.json";
@@ -37,6 +37,7 @@ class App extends Component {
           wrappedTotsupply:"unloaded", 
           wrappedTokenURI:"unloaded", 
           wrappedAddress: "unloaded" ,
+          listAllwrapped:[],
           toAddr: accounts[0]
       });
     } catch (error) {
@@ -81,6 +82,13 @@ class App extends Component {
     }
     
        
+  }
+
+  getAllWrapped =  async(e) => {
+    const {factory} = this.state;
+
+    const list = await factory.methods.getAllWrapped().call()
+    this.setState({ listAllwrapped: list });
   }
 
   unWrap = async (e) => { 
@@ -204,7 +212,7 @@ class App extends Component {
                     placeholder="TotalSupply"                  
                     onChange={(e) => this.handleChange(e)}/>
                     <br />
-                    To:
+                    To: <br />
                     <Input type = "text"
                     key="toAddr"
                     name="toAddr"
@@ -232,7 +240,7 @@ class App extends Component {
                     placeholder="Wrapped ERC20 Address"                  
                     onChange={(e) => this.handleChange(e)}/>
                     <br />
-                    To:
+                    To:<br />
                     <Input type = "text"
                     key="toAddr"
                     name="toAddr"
@@ -243,6 +251,17 @@ class App extends Component {
       <Button color="primary" onClick={(e) => this.unWrap(e)}>Unwrap </Button>
       
 
+      </Form>
+
+      <Form>
+          <h2> List all wrapped token:</h2>
+
+      <Button color="primary" onClick={(e) => this.getAllWrapped(e)}>List all </Button>
+      <ListGroup>
+        
+          {this.state.listAllwrapped.map((item, k) => <ListGroupItem key={k}> {item} </ListGroupItem> )}
+        
+      </ListGroup>
       </Form>
       </div>
     );

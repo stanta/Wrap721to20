@@ -12,7 +12,8 @@ contract ("WrappedERC721asERC20.sol", accounts => {
 
         t721 =  await Token721.new( "CryptoPunk1", "CP1");
         await t721.mint(accounts[0], idNFT);
-
+        await t721.mint(accounts[0], idNFT+1);
+        await t721.mint(accounts[0], idNFT+2);
        assert (accounts[0] == await t721.ownerOf(idNFT), "accounts[0] !=  t721.ownerOf(idNFT)");
        let fs = require('fs');
         fs.writeFile("./contr.json", JSON.stringify({"ERC721":t721.address, "tokenID":idNFT,  "account": accounts[0]}), function(err) {
